@@ -225,8 +225,12 @@ def forecast_case(case, name):
     p1 = max(1.0, float(first["viewers"]))
     log_p1 = math.log(p1)
     train = _training_set(case)
+    rows = case.get("forecast") or []
+    if not rows:
+        # A case that lists no forecast hours still gets hours 2..24.
+        rows = [{"hour": h} for h in range(2, 25)]
     hours = []
-    for row in case.get("forecast", []):
+    for row in rows:
         hour = row["hour"]
         offsets = _fit_hour(train, p1, hour) if train else None
         if offsets is None:
